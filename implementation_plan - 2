@@ -1,0 +1,84 @@
+# Google Stadium v2 - Authentication & Swiggy-Style Dashboards
+
+This plan details the upgrade of Google Stadium to v2, incorporating JWT-based authentication, user roles, Swiggy-style React dashboard UIs, and resolving existing WebSocket and UI bugs. 
+
+## User Review Required
+
+> [!IMPORTANT]
+> - For vendors' `store_name` and `is_open`, I plan to add these fields as nullable columns directly onto the `User` table to avoid overly complex joins, rather than creating a separate table. Let me know if you prefer a completely separate linked table (e.g., `VendorProfile`).
+> - `python-multipart` will also be installed since FastAPI's `OAuth2PasswordRequestForm` requires it for the `/login` endpoint.
+
+## Immediate Fixes
+- **WebSocket Bug:** Enhance the `disconnect()` in `WebSocketClient` checking the `readyState` to gracefully close sockets, preventing the StrictMode double-mount crash.
+- **UI Ping Buttons:** Remove the "Ping A" and "Ping B" buttons from `FanDashboard`'s temporary UI.
+
+---
+
+## Proposed Changes
+
+### Backend Security & Schema (Phase 1)
+
+#### [MODIFY] `backend/requirements.txt`
+- Add `passlib`, `bcrypt`, `python-jose`, and `python-multipart`.
+
+#### [MODIFY] `backend/app/models.py`
+- Expand `User`: Add `email`, `hashed_password`. 
+- Expand `User` for vendor attributes: Add `store_name` (String, nullable) and `is_open` (Boolean, default: False).
+- Add `MenuItem` class: `id`, `vendor_id` (ForeignKey), `name`, `description`, `price` (Float), `icon` (String for Emoji).
+- Update `Order`: Add `menu_item_id` (ForeignKey) for cleaner relations.
+
+#### [MODIFY] `backend/app/schemas.py`
+- Create `UserCreate`, `UserLogin`, `UserResponse`, `Token` schemas.
+- Update `OrderCreate`, `OrderResponse`.
+- Create `MenuItemCreate`, `MenuItemResponse`.
+
+#### [NEW] `backend/app/utils/security.py`
+- Implement password hashing verification (`context.verify`) and JWT encoding/decoding logic (`create_access_token`).
+
+#### [NEW] `backend/app/routers/auth.py`
+- Create `/register` and `/login` (returning standard `access_token`).
+
+#### [MODIFY] `backend/app/routers/*.py`
+- Add `Depends(get_current_user)` to secure the `orders` APIs.
+
+---
+
+### Frontend Auth & Protected Routing (Phase 2)
+
+#### [NEW] `frontend/src/store/authStore.js`
+- Create a Zustand state manager to persist the JWT token, User ID, and Role.
+
+#### [NEW] `frontend/src/components/ProtectedRoute.jsx`
+- Wrap routing components and ensure proper role-based redirection (e.g., `fan` users block-redirected from `/vendor`).
+
+#### [NEW] `frontend/src/pages/Login.jsx` & `frontend/src/pages/Register.jsx`
+- Create clean, user-friendly authentication forms with Tailwind.
+
+#### [MODIFY] `frontend/src/App.jsx`
+- Integrate `ProtectedRoute` and route mappings.
+
+---
+
+### Swiggy-Style Dashboards (Phase 3)
+
+#### [MODIFY] `frontend/src/pages/FanDashboard.jsx`
+- Remove the debug "Ping" buttons.
+- Create dynamic Grid view mapping over backend `Vendors` (`User` table filtered by vendor role).
+- Build the Menu View when selecting a vendor, displaying large emoji icons with `Add to Cart` features.
+
+#### [MODIFY] `frontend/src/pages/VendorDashboard.jsx`
+- Add UI controls to create/manage `MenuItem`s (including price and Emoji selectors).
+- Connect real-time WebSocket signals for the "Order Queue" using modern "Tile" layouts.
+
+#### [MODIFY] `frontend/src/pages/AdminDashboard.jsx`
+- Populate a master table containing all Users/Vendors.
+
+## Verification Plan
+
+### Automated Tests
+- Connect via test requests to the API, sending valid/invalid tokens.
+- Verify `uv pip install ...` outputs successful installs.
+
+### Manual Verification
+- Render the frontend and navigate from Login to Dashboards and test protected routes manually via simulated user roles.
+- Add items via the Vendor UI and assert they accurately render as Emoji tiles on the Fan Dashboard.

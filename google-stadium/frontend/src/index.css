@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-googleBlue: #4285F4;
+  --color-googleRed: #EA4335;
+  --color-googleYellow: #FBBC05;
+  --color-googleGreen: #34A853;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+body {
+  margin: 0;
+}
+
+/* Sprint 19: Bottom sheet slide-up animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.25s ease-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.2s ease-in-out 0s 2;
+}
