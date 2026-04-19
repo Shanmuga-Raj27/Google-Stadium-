@@ -22,7 +22,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    
+
     try {
       const payload = {
         username,
@@ -38,19 +38,19 @@ export default function Register() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || `Registration failed (${response.status})`);
       }
-      
+
       const data = await response.json();
-      
+
       // Auto-login: save the access_token from registration response
       if (data.access_token) {
         login(data.access_token);
         localStorage.setItem("token", data.access_token);
-        
+
         // Route to the correct dashboard based on role
         if (role === 'vendor') navigate('/vendor-dashboard');
         else if (role === 'admin') navigate('/admin-dashboard');
@@ -87,8 +87,8 @@ export default function Register() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-8 md:py-12 transition-colors">
       <div className="w-full max-w-md bg-white dark:bg-gray-900 p-6 md:p-10 rounded-3xl shadow-xl border border-gray-300 dark:border-gray-800">
         <div className="mb-8 text-center">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent mb-2">Google Stadium</h1>
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em]">Join the Platform</h2>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent mb-2">Google Stadium</h1>
+          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em]">Join the Platform</h2>
         </div>
 
         {error && (
@@ -96,7 +96,7 @@ export default function Register() {
             ⚠️ {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 gap-5">
             <div>
@@ -123,7 +123,7 @@ export default function Register() {
                 <option value="admin">System Admin</option>
               </select>
             </div>
-            
+
             {role === 'vendor' && (
               <div className="animate-fade-in-up">
                 <label htmlFor="storeName" className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest text-googleBlue">Business Name</label>
@@ -131,7 +131,7 @@ export default function Register() {
                   className="w-full bg-googleBlue/5 border-2 border-googleBlue/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-googleBlue transition-all" placeholder="The Stadium Grill" aria-label="Business Name" />
               </div>
             )}
-            
+
             {role === 'admin' && (
               <div className="animate-fade-in-up">
                 <label htmlFor="adminSecret" className="block text-xs font-black text-amber-600 mb-2 uppercase tracking-widest">🔒 Secret Auth Code</label>
@@ -141,19 +141,19 @@ export default function Register() {
               </div>
             )}
           </div>
-          
+
           <button type="submit" disabled={isLoading} className={`w-full py-4 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-googleGreen hover:bg-green-600'} text-white font-black rounded-xl shadow-lg shadow-googleGreen/20 transition-all active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap uppercase tracking-widest text-sm`} aria-label="Create your account">
             {isLoading ? (
-               <>
-                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                 </svg>
-                 Creating...
-               </>
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creating...
+              </>
             ) : 'Sign Up Now'}
           </button>
-          
+
           <div className="relative flex items-center py-2">
             <div className="flex-grow border-t border-gray-200 dark:border-gray-800 font-bold"></div>
             <span className="flex-shrink mx-4 text-gray-400 text-[10px] font-black uppercase tracking-widest">or</span>
@@ -161,7 +161,7 @@ export default function Register() {
           </div>
 
           <div className="flex justify-center mt-2">
-            <GoogleLogin 
+            <GoogleLogin
               onSuccess={onGoogleSuccess}
               onError={() => console.log("Google Sign-In failed")}
               useOneTap
@@ -172,11 +172,11 @@ export default function Register() {
             />
           </div>
         </form>
-        
+
         <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              Already have an account? <Link to="/login" className="text-googleBlue hover:underline font-bold" aria-label="Sign In to existing account">Sign In instead</Link>
-            </p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+            Already have an account? <Link to="/login" className="text-googleBlue hover:underline font-bold" aria-label="Sign In to existing account">Sign In instead</Link>
+          </p>
         </div>
       </div>
     </div>
