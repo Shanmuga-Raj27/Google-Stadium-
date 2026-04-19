@@ -12,10 +12,14 @@ import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import SidebarLayout from './components/SidebarLayout';
 import { ThemeProvider } from './store/ThemeContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   return (
-    <ThemeProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <ThemeProvider>
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -63,7 +67,8 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
-    </ThemeProvider>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   );
 }
 
