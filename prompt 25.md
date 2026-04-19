@@ -1,43 +1,31 @@
-# MISSION: Google Stadium v4 - Map-First UI & Simulated Delivery Tracking
+# MISSION: Separate Live Tracking Page (Option A) & Zero-Touch Dashboard Integration
 
-**Role:** Principal React Architect & UI/UX Expert
-**Context:** We are transforming the Fan Dashboard into a "Map-First" experience (similar to Uber/Swiggy). The SVG Map must become the fixed background, and the Vendor Menu will act as a sliding Bottom Sheet. We must also fix Fan order persistence on refresh and implement Status-Based Simulated Tracking for both Fans and Vendors.
+**Role:** Ultra-Conservative Senior React & FastAPI Architect
+**Context:** We are implementing "Option A" (Status-based Simulated Tracking) to solve the Fan refresh memory loss and visualize delivery. 
+**CRITICAL SAFETY DIRECTIVE:** You are STRICTLY FORBIDDEN from altering the HTML layout, CSS, Flexbox, Grid, or wrappers of `FanDashboard.jsx` and `VendorDashboard.jsx`. The existing UI must remain 100% untouched. The Stadium Map must be implemented as a completely SEPARATE page/modal.
 
 **Execution Checklist:**
 
-### PHASE 1: Secure Backend Persistence (FastAPI)
-1. **The "Active Order" Endpoint:**
-   * Create a new secure endpoint: `GET /orders/me/active`.
-   * Extract the user from the JWT token (`current_user`). Query the `orders` table for the most recent order where `user_id == current_user.id` and `status` is NOT 'delivered' or 'cancelled'.
-   * This guarantees a Fan never loses their tracking screen on a page refresh.
+### PHASE 1: Backend State Persistence (`routers/orders.py`)
+1. **New Endpoint:** Create `GET /orders/me/active`.
+2. **Logic:** Extract the user from the JWT token. Query the database to return the single most recent order for that user where `status` is NOT in `['delivered', 'cancelled']`.
 
-### PHASE 2: Map-First Fan UI (`FanDashboard.jsx`)
-1. **Layout Overhaul:**
-   * Remove the standard grid layout. The `StadiumMap` component must take up the entire screen height (`h-screen`, `fixed inset-0`).
-   * **The Bottom Sheet Menu:** Wrap the existing Food Menu and Vendor Selection inside a generic Bottom Sheet container. 
-     * *Tailwind Example:* `<div className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] p-6 z-50 max-h-[70vh] overflow-y-auto transition-transform">`
-     * When an active order exists, minimize this sheet so the Fan can see the tracking map.
-2. **Wake-Up Routine:**
-   * On component mount (`useEffect`), `fetch()` the `GET /orders/me/active` endpoint *before* connecting to the WebSocket. Set the `activeOrder` state to persist the tracking UI.
+### PHASE 2: The Standalone Tracking View (`LiveTracker.jsx` - NEW FILE)
+1. **Create a new component:** `LiveTracker.jsx`. This will house the `<StadiumMap>` and be rendered as a full-screen overlay or dedicated route.
+2. **UI Design:** Use Google Material Design (mobile-first). Include a "Back to Dashboard" button at the top left. The map should take up the rest of the screen.
 
-### PHASE 3: Simulated Live Tracking Engine (`StadiumMap.jsx`)
-1. **The Coordinate Math:**
-   * The map must receive `fanLocation` (e.g., 'block-A') and `vendorLocation` (e.g., 'stall-1') as props.
-   * Draw a dashed `<line>` between `MAP_COORDS[fanLocation]` and `MAP_COORDS[vendorLocation]`.
-2. **Status-Based Animation (Option A):**
-   * Accept the order `status` as a prop.
-   * Calculate the `cx` and `cy` of the Orange Vendor Dot dynamically:
-     * If `status === 'pending'` or `'preparing'`: Dot is at `vendorLocation`.
-     * If `status === 'ready'`: Dot is exactly halfway between vendor and fan. Calculate midpoint: `x = (vendor.x + fan.x) / 2`. Use CSS `transition-all duration-1000` so it glides smoothly to the middle.
-     * If `status === 'delivered'`: Dot is at `fanLocation`.
+### PHASE 3: The Map Logic Upgrades (`StadiumMap.jsx`)
+1. **Props:** The component must accept `fanLocation` (string), `vendorLocation` (string), and `orderStatus` (string).
+2. **Coordinate Dictionary:** Implement a hardcoded constant mapping your location labels to SVG X/Y coordinates. (e.g., `const COORDS = { "Block A": {x: 400, y: 150}, "Block B": {x: 650, y: 400}, "McDonalds": {x: 100, y: 100} };`).
+3. **Simulated Option A Tracking:**
+   * Do NOT delete the existing SVG paths.
+   * Draw a dashed SVG `<line>` between the Vendor and Fan coordinates.
+   * Render an Orange SVG `<circle>` (The Delivery Dot).
+   * **Math:** If `orderStatus` is 'pending'/'preparing', position the dot at the Vendor. If 'ready', position it exactly at the midpoint `(x1+x2)/2, (y1+y2)/2`. If 'delivered', position it at the Fan. Apply `transition-all duration-1000` to the circle's `cx` and `cy` for smooth movement.
 
-### PHASE 4: The Vendor Radar View (`VendorDashboard.jsx`)
-1. **Two-Way Visibility:**
-   * On the Vendor's active order cards, add a "View Live Map" button with a map icon.
-   * Clicking this opens a modal or expands a section containing the EXACT same `StadiumMap` component.
-   * Pass the Fan's block and the Vendor's stall coordinates to the map so the Vendor can see the visual route they need to take for delivery.
-
-**Constraints & UI/UX Standards:**
-* **Security:** Rely strictly on the JWT token for `/orders/me/active`. Do NOT pass `user_id` in the URL parameter for fetching personal orders.
-* **Mobile-First Design:** The Bottom Sheet is a critical mobile pattern. Ensure a small "drag handle" (a rounded gray pill `w-12 h-1.5 rounded-full mx-auto mb-4`) is rendered at the top of the Bottom Sheet to signify it can be swiped/clicked.
-* **Code Quality:** Ensure all WebSockets maintain the strict `if (ws.readyState === 1) ws.close();` cleanup.
+### PHASE 4: Surgical Dashboard Integration (Minimal Touch)
+1. **Fan Dashboard (`FanDashboard.jsx`):**
+   * Add a `fetch` call to `GET /orders/me/active` inside the `useEffect` *before* the WebSocket connects. Set it to `activeOrder` state.
+   * **Only UI Change allowed:** If `activeOrder` exists, render a single standard Google Material button: `<button>Track Live Order</button>`. When clicked, open the `LiveTracker` component. DO NOT wrap or alter any other elements.
+2. **Vendor Dashboard (`VendorDashboard.jsx`):**
+   * **Only UI Change allowed:** Inside the active orders list mapped items, add a button: `<button>View Route</button>`. When clicked, open the `LiveTracker` component passing the specific order's data.

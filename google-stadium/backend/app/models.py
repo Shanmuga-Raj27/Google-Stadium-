@@ -28,6 +28,11 @@ class User(Base):
     hashed_password = Column(String, nullable=True)
     role = Column(SAEnum(RoleEnum), default=RoleEnum.fan)
 
+    # Location memory — remembers the fan's last seat
+    default_block = Column(String, nullable=True)
+    default_row = Column(String, nullable=True)
+    default_seat = Column(String, nullable=True)
+
     vendor_profile = relationship("VendorProfile", back_populates="user", uselist=False, lazy="selectin")
 
 class VendorProfile(Base):

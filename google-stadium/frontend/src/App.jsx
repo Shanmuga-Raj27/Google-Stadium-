@@ -8,6 +8,7 @@ import AdminMapEditor from './pages/AdminMapEditor';
 import StadiumMapPage from './pages/StadiumMapPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import SidebarLayout from './components/SidebarLayout';
 import { ThemeProvider } from './store/ThemeContext';
@@ -19,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<LandingPage />} />
           
           <Route element={<SidebarLayout />}>
             <Route path="/fan-dashboard" element={

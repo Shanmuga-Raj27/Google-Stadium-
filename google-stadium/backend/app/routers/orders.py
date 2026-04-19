@@ -24,6 +24,20 @@ async def get_vendor_active_orders(
     )
     return result.scalars().all()
 
+@router.get("/me/active", response_model=OrderResponse | None)
+async def get_my_active_order(
+    db: AsyncSession = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    """Fetch the single most recent active order for the current logged-in fan."""
+    result = await db.execute(
+        select(Order).where(
+            Order.user_id == current_user.id,
+            Order.status.notin_([StatusEnum.delivered])
+        ).order_by(Order.id.desc())
+    )
+    return result.scalars().first()
+
 def calculate_smart_cart(subtotal: float, delivery_method: DeliveryMethodEnum):
     """
     Smart Cart Engine — server-side pricing with tiered promotions.
@@ -86,6 +100,13 @@ async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db), c
     db.add(db_order)
     await db.commit()
     await db.refresh(db_order)
+    
+    # Location Memory: Save user's seat location for auto-fill on next visit
+    if order.block or order.row or order.seat:
+        current_user.default_block = order.block or current_user.default_block
+        current_user.default_row = order.row or current_user.default_row
+        current_user.default_seat = order.seat or current_user.default_seat
+        await db.commit()
     
     from ..main import manager
     await manager.send_personal_message(

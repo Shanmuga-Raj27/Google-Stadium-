@@ -7,8 +7,8 @@ from sqlalchemy.exc import IntegrityError
 from jose import JWTError, jwt
 from app.database import get_db
 from app.models import User, VendorProfile
-from app.schemas import UserCreate, UserResponse, Token, TokenData, RoleEnum
-from app.utils.security import verify_password, get_password_hash, create_access_token, SECRET_KEY, ALGORITHM
+from app.schemas import UserCreate, UserResponse, RegisterResponse, Token, TokenData, RoleEnum
+from app.utils.security import verify_password, get_password_hash, create_access_token, SECRET_KEY, ALGORITHM, ADMIN_REGISTRATION_SECRET
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -35,9 +35,18 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         raise credentials_exception
     return user
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=RegisterResponse)
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     print(f">>> [BACKEND] RECEIVED REGISTER REQUEST FOR: {user.username}")
+    
+    # Secure admin registration — require secret code
+    if user.role == RoleEnum.admin:
+        if not user.admin_secret or user.admin_secret != ADMIN_REGISTRATION_SECRET:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Invalid admin access code. Admin registration requires a valid secret."
+            )
+    
     result = await db.execute(select(User).where(User.username == user.username))
     if result.scalars().first():
         raise HTTPException(status_code=400, detail="Username already registered")
@@ -70,7 +79,19 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
         )
         result = await db.execute(stmt)
         new_user_loaded = result.scalar_one()
-        return new_user_loaded
+        
+        # Auto-login: generate token immediately upon registration
+        access_token = create_access_token(data={
+            "sub": new_user_loaded.username, 
+            "role": new_user_loaded.role, 
+            "id": new_user_loaded.id
+        })
+        
+        return RegisterResponse(
+            user=UserResponse.model_validate(new_user_loaded),
+            access_token=access_token,
+            token_type="bearer"
+        )
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -92,3 +113,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     
     access_token = create_access_token(data={"sub": user.username, "role": user.role, "id": user.id})
     return {"access_token": access_token, "token_type": "bearer"}
+
+# New endpoint: Return current user's profile (for location auto-fill)
+@router.get("/me", response_model=UserResponse)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user

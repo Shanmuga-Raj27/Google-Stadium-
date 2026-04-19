@@ -21,9 +21,9 @@ export default function SidebarLayout() {
   return (
     <div className="flex h-screen w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors overflow-hidden relative">
       {/* Mobile Top Header */}
-      <header className="md:hidden absolute top-0 left-0 w-full h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 z-40">
-        <h2 className="text-xl font-semibold bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent">
-          Stadium v2
+      <header className="md:hidden absolute top-0 left-0 w-full h-16 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 flex items-center justify-between px-4 z-40">
+        <h2 className="text-xl font-bold bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent">
+          Google Stadium
         </h2>
         <button className="p-2 text-gray-600 dark:text-gray-400" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           <Menu size={28} />
@@ -44,13 +44,13 @@ export default function SidebarLayout() {
           fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
           ${isCollapsed ? 'md:w-20 w-72' : 'w-72 md:w-64'} 
-          border-r border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 flex flex-col shrink-0 overflow-hidden
+          border-r border-gray-300 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 flex flex-col shrink-0 overflow-hidden
         `}
       >
-        <div className={`p-4 border-b border-gray-200 dark:border-gray-800 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className={`p-4 border-b border-gray-300 dark:border-gray-800 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed && (
-            <h2 className="text-2xl font-semibold bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent truncate cursor-default">
-              Stadium v2
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent truncate cursor-default">
+              Google Stadium
             </h2>
           )}
           <button 
@@ -62,7 +62,7 @@ export default function SidebarLayout() {
           </button>
         </div>
 
-        <div className={`p-4 mt-2 border-b border-gray-200 dark:border-gray-800 flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
+        <div className={`p-4 mt-2 border-b border-gray-300 dark:border-gray-800 flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
           <div className="w-10 h-10 shrink-0 bg-googleBlue/10 dark:bg-googleBlue/20 text-googleBlue flex items-center justify-center rounded-full">
             <UserIcon size={20} className="font-bold" />
           </div>
@@ -130,7 +130,7 @@ export default function SidebarLayout() {
           )}
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+        <div className="p-4 border-t border-gray-300 dark:border-gray-800 space-y-2">
           <button
             onClick={toggleTheme}
             className={`flex w-full items-center rounded-xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-all ${isCollapsed ? 'justify-center p-3' : 'space-x-3 px-4 py-3'}`}

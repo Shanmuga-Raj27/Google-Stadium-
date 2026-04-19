@@ -24,7 +24,7 @@ export default function AdminMapEditor() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/map/config', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/config`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOverrides(res.data.overrides || {});
@@ -56,7 +56,7 @@ export default function AdminMapEditor() {
   const saveConfig = async () => {
     try {
       setSaveStatus('saving');
-      await axios.post('http://127.0.0.1:8000/map/config', { overrides }, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/map/config`, { overrides }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSaveStatus('saved');
@@ -73,12 +73,12 @@ export default function AdminMapEditor() {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full pb-32">
-      <header className="mb-6 border-b border-gray-200 dark:border-gray-800 pb-4 mt-2 md:mt-6">
-        <h1 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+      <header className="mb-6 border-b border-gray-300 dark:border-gray-800 pb-5 mt-2 md:mt-6">
+        <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent uppercase tracking-tight">
           Map Editor
         </h1>
-        <p className="text-gray-400 mt-2 font-medium">
-          Click any section to rename or recolor it. Changes are saved to the database.
+        <p className="text-gray-600 dark:text-gray-400 mt-2 font-semibold">
+          Click any section to rename or recolor it. Changes are saved to the database and broadcasted instantly.
         </p>
       </header>
 
@@ -95,10 +95,10 @@ export default function AdminMapEditor() {
 
         {/* Desktop Edit Panel (right sidebar) */}
         {selectedId && currentSection && (
-          <div className="hidden lg:flex flex-col w-72 shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 gap-5 self-start sticky top-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Section</h3>
-              <button onClick={() => setSelectedId(null)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white transition min-w-[48px] min-h-[48px] flex items-center justify-center">
+          <div className="hidden lg:flex flex-col w-72 shrink-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-sm p-6 gap-6 self-start sticky top-6">
+            <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+              <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">Edit Section</h3>
+              <button onClick={() => setSelectedId(null)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white transition flex items-center justify-center rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
                 <X size={18} />
               </button>
             </div>
@@ -151,7 +151,7 @@ export default function AdminMapEditor() {
             className="lg:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm animate-fade-in"
             onClick={() => setSelectedId(null)}
           />
-          <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-t-3xl shadow-2xl p-5 pb-8 animate-slide-up">
+          <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 rounded-t-3xl shadow-2xl p-5 pb-8 animate-slide-up">
             <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4" />
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit: {currentSection.label}</h3>
@@ -170,7 +170,7 @@ export default function AdminMapEditor() {
                   type="text"
                   value={currentOverride.label || currentSection.label}
                   onChange={(e) => updateOverride('label', e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-base text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-googleBlue"
+                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl p-3 text-base text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-googleBlue"
                 />
               </div>
               <div>

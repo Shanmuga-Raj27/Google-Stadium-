@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
-import StadiumSVG, { MAP_COORDS } from '../components/StadiumSVG';
+import { MAP_COORDS } from '../components/StadiumSVG';
+
+const API = import.meta.env.VITE_API_URL;
 
 const ORDER_STEPS = ['pending', 'preparing', 'ready', 'delivered'];
 
@@ -65,10 +67,34 @@ export default function FanDashboard() {
   });
   const { token, user } = useAuthStore();
 
+  // Location auto-fill: fetch user profile and pre-populate saved seat location
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const res = await axios.get(`${API}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data) {
+          const { default_block, default_row, default_seat } = res.data;
+          if (default_block || default_row || default_seat) {
+            setLocation({
+              block: default_block || '',
+              row: default_row || '',
+              seat: default_seat || ''
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch user profile for auto-fill', e);
+      }
+    };
+    if (token) fetchUserProfile();
+  }, [token]);
+
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/vendors/', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/vendors/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setVendors(res.data);
@@ -81,7 +107,7 @@ export default function FanDashboard() {
   useEffect(() => {
     const fetchMapConfig = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/map/config', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/config`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMapOverrides(res.data.overrides || {});
@@ -93,18 +119,47 @@ export default function FanDashboard() {
   useEffect(() => {
     const fetchGates = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/gates/status');
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gates/status`);
         setGates(res.data);
       } catch (e) {}
     };
     fetchGates();
   }, []);
 
+  // Phase 1: Persistence — Fetch active order on mount/refresh
+  useEffect(() => {
+    const fetchActiveOrder = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/orders/me/active`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data) {
+          // Sync state with backend to solve memory loss
+          setActiveOrders([{
+            order_id: res.data.id,
+            item: res.data.item,
+            status: res.data.status,
+            total_price: res.data.total_price,
+            delivery_fee: res.data.delivery_fee,
+            freebies: res.data.freebies,
+            delivery_method: res.data.delivery_method,
+            vendor_message: res.data.vendor_message,
+            block: res.data.block,
+            vendor_id: res.data.vendor_id
+          }]);
+        }
+      } catch (e) {
+        console.error("Failed to fetch persistent order", e);
+      }
+    };
+    if (token) fetchActiveOrder();
+  }, [token]);
+
   // Block-scoped WebSocket — strict StrictMode cleanup pattern
   useEffect(() => {
     if (!user) return;
     let isCancelled = false;
-    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${user.id}`);
+    const socket = new WebSocket(`${API.replace('http', 'ws')}/ws/${user.id}`);
 
     socket.onopen = () => {
       if (!isCancelled) console.log("Fan WS Connected");
@@ -148,7 +203,7 @@ export default function FanDashboard() {
     }
     try {
       setOrderStatus(`Placing order for ${menuItem.name}...`);
-      const res = await axios.post('http://127.0.0.1:8000/orders/', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/orders/`, {
         user_id: user.id,
         vendor_id: activeVendor.id,
         menu_item_id: menuItem.id,
@@ -205,37 +260,37 @@ export default function FanDashboard() {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto w-full pb-24">
-      <header className="mb-8 border-b border-gray-200 dark:border-gray-800 pb-4 mt-2 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <header className="mb-8 border-b border-gray-300 dark:border-gray-800 pb-4 mt-2 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Google Stadium v3</h1>
-          <p className="text-gray-400 mt-2 font-medium">Hello, {user?.username}! Order directly to your seat.</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent">Google Stadium</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 font-semibold">Hello, {user?.username}! Order directly to your seat.</p>
         </div>
       </header>
 
       {/* Seat Location Input */}
-      <div className="mb-8 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">📍 Your Seat Location</h2>
+      <div className="mb-8 p-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-sm">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">📍 Your Seat Location</h2>
         <div className="flex flex-wrap gap-3">
           <div className="flex-1 min-w-[80px]">
-            <label className="text-xs text-gray-500 mb-1 block font-medium">Block</label>
+            <label className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Block</label>
             <input type="text" placeholder="A" value={location.block} onChange={e => setLocation({...location, block: e.target.value})}
-              className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-bold uppercase outline-none focus:ring-2 focus:ring-googleBlue" />
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black uppercase outline-none focus:ring-2 focus:ring-googleBlue" />
           </div>
           <div className="flex-1 min-w-[80px]">
-            <label className="text-xs text-gray-500 mb-1 block font-medium">Row</label>
+            <label className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Row</label>
             <input type="text" placeholder="3" value={location.row} onChange={e => setLocation({...location, row: e.target.value})}
-              className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-bold outline-none focus:ring-2 focus:ring-googleBlue" />
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black outline-none focus:ring-2 focus:ring-googleBlue" />
           </div>
           <div className="flex-1 min-w-[80px]">
-            <label className="text-xs text-gray-500 mb-1 block font-medium">Seat</label>
+            <label className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Seat</label>
             <input type="text" placeholder="12" value={location.seat} onChange={e => setLocation({...location, seat: e.target.value})}
-              className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-bold outline-none focus:ring-2 focus:ring-googleBlue" />
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black outline-none focus:ring-2 focus:ring-googleBlue" />
           </div>
         </div>
         
         {/* Delivery Method Toggle */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <label className="text-xs text-gray-500 mb-2 block font-medium uppercase tracking-wider">Delivery Method</label>
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <label className="text-xs text-gray-700 dark:text-gray-400 mb-3 block font-bold uppercase tracking-wider">Delivery Method</label>
           <div className="flex gap-3">
             <button 
               onClick={() => setDeliveryMethod('pickup')}
@@ -272,115 +327,27 @@ export default function FanDashboard() {
         </div>
       )}
 
-      {/* Live Tracking Map — shown when there's an active order */}
-      {trackingOrder && (
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">📡 Live Delivery Tracking</h2>
-          <div className="relative bg-gray-900 border-2 border-gray-700 rounded-3xl p-3 md:p-4 shadow-2xl">
-            {/* SVG stadium with admin overrides applied */}
-            <StadiumSVG overrides={mapOverrides} />
-
-            {/* Tracking overlays — positioned absolutely on top of the SVG */}
-            {/* The SVG viewBox is 800x800, so we use percentage positioning */}
-
-            {/* Animated SVG route line */}
-            {fanCoords && vendorCoords && (
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                viewBox="0 0 800 800"
-                preserveAspectRatio="xMidYMid meet"
-                style={{ top: 0, left: 0 }}
-              >
-                <line
-                  x1={fanCoords.x} y1={fanCoords.y}
-                  x2={vendorCoords.x} y2={vendorCoords.y}
-                  stroke="#4285F4"
-                  strokeWidth="3"
-                  strokeDasharray="12 6"
-                  strokeLinecap="round"
-                  opacity="0.7"
-                >
-                  <animate attributeName="stroke-dashoffset" from="0" to="36" dur="1.5s" repeatCount="indefinite" />
-                </line>
-              </svg>
-            )}
-
-            {/* Blue dot — Fan location */}
-            {fanCoords && (
-              <div
-                className="absolute z-30 pointer-events-none"
-                style={{
-                  left: `${(fanCoords.x / 800) * 100}%`,
-                  top: `${(fanCoords.y / 800) * 100}%`,
-                  transform: 'translate(-50%, -50%)'
-                }}
-              >
-                <span className="relative flex h-5 w-5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-5 w-5 bg-blue-500 border-2 border-white/50" />
-                </span>
-              </div>
-            )}
-
-            {/* Orange dot — Vendor location */}
-            {vendorCoords && (
-              <div
-                className="absolute z-30 pointer-events-none"
-                style={{
-                  left: `${(vendorCoords.x / 800) * 100}%`,
-                  top: `${(vendorCoords.y / 800) * 100}%`,
-                  transform: 'translate(-50%, -50%)'
-                }}
-              >
-                <span className="relative flex h-5 w-5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-5 w-5 bg-orange-500 border-2 border-white/50" />
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Tracking legend */}
-          <div className="mt-3 flex flex-wrap gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500" />
-              </span>
-              <span className="text-gray-400 font-medium">Your Location ({fanKey || 'Unknown'})</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500" />
-              </span>
-              <span className="text-gray-400 font-medium">Vendor (Food Court 1)</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* My Active Orders */}
       {activeOrders.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">🛵 My Active Orders</h2>
-          <div className="space-y-4">
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-5 text-gray-900 dark:text-white">🛵 My Active Orders</h2>
+          <div className="space-y-5">
             {activeOrders.filter(o => o.status !== 'delivered').map(o => (
-              <div key={o.order_id} className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md">
-                <div className="flex justify-between items-center">
+              <div key={o.order_id} className="p-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-sm">
+                <div className="flex justify-between items-center mb-4">
                   <div>
-                    <span className="font-bold text-lg text-gray-900 dark:text-white">Order #{o.order_id}</span>
-                    <p className="text-sm text-gray-500 mt-0.5">{o.item}</p>
+                    <span className="font-extrabold text-xl text-gray-900 dark:text-white">Order #{o.order_id}</span>
+                    <p className="text-base text-gray-600 dark:text-gray-400 mt-1 font-medium">{o.item}</p>
                     {o.total_price > 0 && (
-                      <p className="text-sm font-semibold text-googleGreen mt-1">₹{o.total_price.toFixed(2)}
-                        {o.delivery_fee > 0 && <span className="text-gray-400 font-normal ml-2">(incl. ₹{o.delivery_fee.toFixed(2)} delivery)</span>}
+                      <p className="text-lg font-bold text-googleGreen mt-2">₹{o.total_price.toFixed(2)}
+                        {o.delivery_fee > 0 && <span className="text-gray-500 font-medium ml-2 text-sm">(incl. ₹{o.delivery_fee.toFixed(2)} delivery)</span>}
                       </p>
                     )}
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                    o.status === 'ready' ? 'bg-googleGreen/20 text-googleGreen border border-googleGreen/30' :
-                    o.status === 'preparing' ? 'bg-googleYellow/20 text-googleYellow border border-googleYellow/30' :
-                    'bg-googleBlue/20 text-googleBlue border border-googleBlue/30'
+                  <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border-2 ${
+                    o.status === 'ready' ? 'bg-googleGreen/20 text-googleGreen border-googleGreen/30' :
+                    o.status === 'preparing' ? 'bg-googleYellow/20 text-googleYellow border-googleYellow/30' :
+                    'bg-googleBlue/20 text-googleBlue border-googleBlue/30'
                   }`}>{o.status}</span>
                 </div>
                 
@@ -436,17 +403,17 @@ export default function FanDashboard() {
 
       {!activeVendor ? (
         <div>
-          <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">🍔 Available Vendors</h2>
+          <h2 className="text-2xl font-extrabold mb-6 text-gray-900 dark:text-white uppercase tracking-tight">🍔 Available Vendors</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vendors.map(v => (
-              <div key={v.id} onClick={() => setActiveVendor(v)} className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-md cursor-pointer hover:shadow-lg transition hover:-translate-y-1 group">
-                <div className="h-32 bg-gray-100 dark:bg-gray-900 rounded-xl mb-4 flex items-center justify-center text-5xl">
+              <div key={v.id} onClick={() => setActiveVendor(v)} className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-300 dark:border-gray-700 shadow-sm cursor-pointer hover:shadow-xl transition-all hover:-translate-y-2 group">
+                <div className="h-40 bg-gray-50 dark:bg-gray-900 rounded-2xl mb-5 flex items-center justify-center text-6xl drop-shadow-md">
                     🏪
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-googleBlue transition">{v.vendor_profile?.store_name || v.username}</h3>
-                <p className="text-sm text-gray-500 mt-2 flex justify-between items-center">
-                    <span>{v.vendor_profile?.menu_items?.length || 0} items</span>
-                    <span className="px-2 py-1 bg-emerald-500/10 text-emerald-500 rounded-md font-bold text-xs uppercase tracking-wider border border-emerald-500/20">OPEN</span>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-googleBlue transition-colors">{v.vendor_profile?.store_name || v.username}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 flex justify-between items-center font-medium">
+                    <span>{v.vendor_profile?.menu_items?.length || 0} items available</span>
+                    <span className="px-3 py-1 bg-googleGreen/10 text-googleGreen rounded-full font-black text-[10px] uppercase tracking-widest border border-googleGreen/20">OPEN</span>
                 </p>
               </div>
             ))}
@@ -454,39 +421,43 @@ export default function FanDashboard() {
         </div>
       ) : (
         <>
-           <button onClick={() => setActiveVendor(null)} className="mb-6 flex items-center p-3 gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white font-bold transition min-h-[48px]">
-               ← Back to Vendors
+           <button onClick={() => setActiveVendor(null)} className="mb-6 flex items-center p-3 gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white font-bold transition-colors min-h-[48px] group">
+               <span className="transition-transform group-hover:-translate-x-1">←</span> Back to Vendors
            </button>
-           <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-8 border-b border-gray-200 dark:border-gray-800 pb-4">{activeVendor.vendor_profile?.store_name || activeVendor.username} Menu</h2>
+           <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-8 border-b border-gray-300 dark:border-gray-800 pb-5 uppercase tracking-tight">{activeVendor.vendor_profile?.store_name || activeVendor.username}</h2>
            
-           <div className="space-y-4">
+           <div className="space-y-6">
                {(activeVendor.vendor_profile?.menu_items || []).map(item => {
                  const preview = getPreviewPricing(item.price);
                  return (
-                   <div key={item.id} className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-md">
-                       <div className="flex items-center gap-4 md:gap-6">
-                           <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center text-4xl md:text-6xl shrink-0 drop-shadow-xl">{item.icon}</div>
+                   <div key={item.id} className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-300 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                       <div className="flex items-center gap-6">
+                           <div className="w-20 h-20 md:w-28 md:h-28 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl flex items-center justify-center text-5xl md:text-7xl shrink-0 shadow-inner">{item.icon}</div>
                            <div className="flex-1 min-w-0">
-                               <h3 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white mb-1 truncate">{item.name}</h3>
-                               <p className="text-gray-500 dark:text-gray-400 text-sm mb-2 hidden md:block">{item.description || "Fresh and delicious. Order straight to your seat!"}</p>
-                               <p className="text-lg font-semibold text-googleGreen">₹{Number(item.price).toFixed(2)}</p>
+                               <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-2 truncate">{item.name}</h3>
+                               <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 hidden md:block font-medium">{item.description || "Fresh and delicious. Order straight to your seat!"}</p>
+                               <p className="text-2xl font-black text-googleGreen">₹{Number(item.price).toFixed(2)}</p>
                            </div>
                            <div className="shrink-0">
-                               <button onClick={() => placeOrder(item)} className="px-4 md:px-6 py-3 bg-googleBlue hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg transition active:scale-95 min-h-[48px]">
+                               <button onClick={() => placeOrder(item)} className="px-8 py-4 bg-googleBlue hover:bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-googleBlue/20 transition active:scale-95 min-h-[56px] text-lg">
                                    Order
                                </button>
                            </div>
                        </div>
                        {/* Pricing Preview */}
-                       <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap items-center gap-3 text-xs font-medium text-gray-500">
-                         <span>Subtotal: ₹{preview.subtotal.toFixed(2)}</span>
-                         {preview.fee > 0 && <span className="text-orange-500">+ Delivery: ₹{preview.fee.toFixed(2)}</span>}
-                         {preview.fee === 0 && deliveryMethod === 'seat_delivery' && <span className="text-googleGreen">🚚 Free Delivery!</span>}
-                         <span className="font-bold text-gray-900 dark:text-white">Total: ₹{preview.total.toFixed(2)}</span>
+                       <div className="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700 flex flex-wrap items-center gap-4 text-xs font-bold text-gray-600 dark:text-gray-400">
+                         <span className="uppercase tracking-widest">Subtotal: ₹{preview.subtotal.toFixed(2)}</span>
+                         {preview.fee > 0 && <span className="text-orange-600">+ Delivery: ₹{preview.fee.toFixed(2)}</span>}
+                         {preview.fee === 0 && deliveryMethod === 'seat_delivery' && <span className="text-googleGreen">🚚 FREE DELIVERY</span>}
+                         <span className="text-lg text-gray-900 dark:text-white font-black ml-auto">TOTAL: ₹{preview.total.toFixed(2)}</span>
                          {preview.freebies.length > 0 && (
-                           <span className="px-2 py-0.5 bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-md">
-                             🎁 {preview.freebies.join(' + ')}
-                           </span>
+                           <div className="w-full mt-2 flex gap-2">
+                             {preview.freebies.map(f => (
+                               <span key={f} className="px-3 py-1 bg-amber-500/10 text-amber-700 border border-amber-500/20 rounded-lg text-[10px] uppercase tracking-widest font-black">
+                                 🎁 Free {f}
+                               </span>
+                             ))}
+                           </div>
                          )}
                        </div>
                    </div>

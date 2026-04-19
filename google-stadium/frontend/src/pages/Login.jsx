@@ -22,8 +22,8 @@ export default function Login() {
       params.append('username', username);
       params.append('password', password);
 
-      console.log("[AUTH] Step 3: Sending native fetch to http://127.0.0.1:8000/auth/login");
-      const response = await fetch("http://127.0.0.1:8000/auth/login", {
+      console.log(`[AUTH] Step 3: Sending request to ${import.meta.env.VITE_API_URL}/auth/login`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params
@@ -60,26 +60,32 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4">
-      <div className="w-full max-w-md bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
-        <h2 className="text-3xl font-semibold text-white mb-6 text-center">Sign In</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4 transition-colors">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-10 rounded-3xl shadow-xl border border-gray-300 dark:border-gray-700">
+        <div className="mb-8 text-center">
+            <h1 className="text-4xl font-black bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent mb-2">Google Stadium</h1>
+            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em]">Sign In</h2>
+        </div>
+        
         {error && (
-          <div className="p-3 mb-4 text-sm text-red-400 bg-red-500/10 border border-red-500/50 rounded-lg animate-shake">
-            {error}
+          <div className="p-4 mb-6 text-sm font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10 border border-red-300 dark:border-red-500/50 rounded-xl animate-shake">
+            ⚠️ {error}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
+            <label className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">Username</label>
             <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+              className="w-full bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-googleBlue transition-all shadow-inner placeholder:text-gray-400" placeholder="Enter username" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
+            <label className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">Password</label>
             <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+              className="w-full bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-googleBlue transition-all shadow-inner placeholder:text-gray-400" placeholder="••••••••" />
           </div>
-          <button type="submit" disabled={isLoading} className={`w-full py-3 ${isLoading ? 'bg-gray-600 cursor-not-allowed' : 'bg-googleBlue hover:bg-googleBlue/90'} text-white font-bold rounded-lg shadow-lg transition active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap`}>
+          
+          <button type="submit" disabled={isLoading} className={`w-full py-4 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-googleBlue hover:bg-blue-600'} text-white font-black rounded-xl shadow-lg shadow-googleBlue/20 transition-all active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap uppercase tracking-widest text-sm`}>
             {isLoading ? (
               <>
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -88,12 +94,15 @@ export default function Login() {
                 </svg>
                 Processing...
               </>
-            ) : 'Login'}
+            ) : 'Sign In'}
           </button>
         </form>
-        <p className="mt-6 text-center text-gray-400 text-sm">
-          Don't have an account? <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium">Create one</Link>
-        </p>
+        
+        <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700 text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+              New to the platform? <Link to="/register" className="text-googleBlue hover:underline font-bold">Create an account</Link>
+            </p>
+        </div>
       </div>
     </div>
   );

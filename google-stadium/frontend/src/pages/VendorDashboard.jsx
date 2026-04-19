@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function VendorDashboard() {
   const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
@@ -22,7 +24,7 @@ export default function VendorDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/vendors/', { headers: { Authorization: `Bearer ${token}` }});
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/vendors/`, { headers: { Authorization: `Bearer ${token}` }});
         const myProfile = res.data.find(v => v.id === user.id);
         if (myProfile && myProfile.vendor_profile) {
           setMenuItems(myProfile.vendor_profile.menu_items || []);
@@ -32,7 +34,7 @@ export default function VendorDashboard() {
     // Fetch persistent active orders from API (fixes state-loss on refresh)
     const fetchActiveOrders = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/orders/vendor/${user.id}/active`, {
+        const res = await axios.get(`${API}/orders/vendor/${user.id}/active`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const mapped = res.data.map(o => ({
@@ -62,7 +64,7 @@ export default function VendorDashboard() {
   useEffect(() => {
     if (!user) return;
     let isCancelled = false;
-    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${user.id}`);
+    const socket = new WebSocket(`${API.replace('http', 'ws')}/ws/${user.id}`);
 
     socket.onopen = () => {
       if (!isCancelled) console.log("Vendor WS Connected");
@@ -94,7 +96,7 @@ export default function VendorDashboard() {
   const handleAddMenu = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://127.0.0.1:8000/vendors/menu', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/vendors/menu`, {
         name: menuForm.name,
         description: '',
         price: parseFloat(menuForm.price),
@@ -109,7 +111,7 @@ export default function VendorDashboard() {
 
   const updateOrderStatus = async (orderId, newStatus, idx, message = null) => {
     try {
-      await axios.put(`http://127.0.0.1:8000/orders/${orderId}/${newStatus}`, 
+      await axios.put(`${API}/orders/${orderId}/${newStatus}`, 
         message ? { vendor_message: message } : {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -160,10 +162,10 @@ export default function VendorDashboard() {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
-      <header className="mb-8 border-b border-gray-200 dark:border-gray-800 pb-4 mt-2 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <header className="mb-8 border-b border-gray-300 dark:border-gray-800 pb-4 mt-2 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-semibold text-orange-400">Vendor Node: {user.username}</h1>
-          <p className="text-gray-400 mt-2">Manage live orders and menu availability.</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-orange-600 dark:text-orange-400 uppercase tracking-tight">Vendor Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 font-semibold">Store Node: <span className="text-gray-900 dark:text-white">{user.username}</span> | Manage live orders and menu availability.</p>
         </div>
       </header>
 
@@ -220,25 +222,25 @@ export default function VendorDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Menu Manager */}
-        <div className="bg-white dark:bg-gray-800 p-4 md:p-6 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm flex flex-col gap-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">🛒 Menu Admin</h2>
-          <form className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col gap-4" onSubmit={handleAddMenu}>
-            <h3 className="font-semibold text-gray-600 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2">Add New Item</h3>
-            <div className="flex flex-wrap gap-3">
-              <div className="w-16">
-                <label className="text-xs text-gray-500 mb-1 block">Emoji</label>
-                <input required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-center text-xl" value={menuForm.icon} onChange={e=>setMenuForm({...menuForm, icon: e.target.value})} />
+        <div className="bg-white dark:bg-gray-800 p-6 md:p-8 border border-gray-300 dark:border-gray-700 rounded-3xl shadow-sm flex flex-col gap-6">
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3 uppercase tracking-tight">🛒 Menu Admin</h2>
+          <form className="p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-300 dark:border-gray-700 flex flex-col gap-5" onSubmit={handleAddMenu}>
+            <h3 className="font-bold text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-700 pb-3 uppercase text-xs tracking-widest">Add New Item</h3>
+            <div className="flex flex-wrap gap-4">
+              <div className="w-20">
+                <label className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Icon</label>
+                <input required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-center text-2xl shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.icon} onChange={e=>setMenuForm({...menuForm, icon: e.target.value})} />
               </div>
-              <div className="flex-1 min-w-[120px]">
-                <label className="text-xs text-gray-500 mb-1 block">Name</label>
-                <input required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white" value={menuForm.name} onChange={e=>setMenuForm({...menuForm, name: e.target.value})} placeholder="Spicy Nachos" />
+              <div className="flex-1 min-w-[150px]">
+                <label className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Item Name</label>
+                <input required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white font-bold placeholder:text-gray-400 shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.name} onChange={e=>setMenuForm({...menuForm, name: e.target.value})} placeholder="Spicy Nachos" />
               </div>
-              <div className="w-24">
-                <label className="text-xs text-gray-500 mb-1 block">Price (₹)</label>
-                <input required type="number" step="0.01" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white" value={menuForm.price} onChange={e=>setMenuForm({...menuForm, price: e.target.value})} placeholder="199" />
+              <div className="w-32">
+                <label className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Price (₹)</label>
+                <input required type="number" step="0.01" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white font-bold shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.price} onChange={e=>setMenuForm({...menuForm, price: e.target.value})} placeholder="199" />
               </div>
             </div>
-            <button type="submit" className="p-4 bg-googleBlue hover:bg-blue-600 rounded-lg font-bold text-white mt-2 transition shadow-md">+ Publish Item</button>
+            <button type="submit" className="p-4 bg-googleBlue hover:bg-blue-600 rounded-xl font-black text-white mt-2 transition-all shadow-lg active:scale-95 text-sm uppercase tracking-widest">+ Publish to Menu</button>
           </form>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-max">
@@ -255,8 +257,8 @@ export default function VendorDashboard() {
         </div>
 
         {/* Order Queue */}
-        <div className="bg-white dark:bg-gray-800 p-4 md:p-6 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm min-h-[500px]">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 p-6 md:p-8 border border-gray-300 dark:border-gray-700 rounded-3xl shadow-sm min-h-[500px]">
+          <h2 className="text-2xl font-black mb-8 flex items-center gap-3 text-gray-900 dark:text-white uppercase tracking-tight">
              ⚡ Live Queue 
              <span className="flex h-4 w-4 relative">
                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -264,20 +266,21 @@ export default function VendorDashboard() {
              </span>
           </h2>
           {orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+            <div className="flex flex-col items-center justify-center h-80 text-gray-400 italic border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl">
+              <span className="text-5xl mb-4 opacity-20">📥</span>
               Awaiting incoming orders...
             </div>
           ) : (
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               {orders.map((o, i) => {
                 const action = getNextAction(o._localStatus);
                 return (
-                  <li key={i} className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition">
+                  <li key={i} className="p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-300 dark:border-gray-700 shadow-sm transition-all hover:border-gray-400">
                     <div className="flex justify-between items-start gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="font-bold text-xl text-gray-900 dark:text-white">#{o.order_id}</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getStatusBadge(o._localStatus)}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="font-black text-2xl text-gray-900 dark:text-white">#{o.order_id}</span>
+                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 ${getStatusBadge(o._localStatus)}`}>
                             {o._localStatus}
                           </span>
                         </div>
@@ -322,6 +325,7 @@ export default function VendorDashboard() {
         </div>
 
       </div>
+
     </div>
   );
 }

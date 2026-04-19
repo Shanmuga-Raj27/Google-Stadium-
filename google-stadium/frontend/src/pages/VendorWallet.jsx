@@ -86,7 +86,7 @@ export default function VendorWallet() {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto w-full pb-24">
-      <header className="mb-8 border-b border-gray-200 dark:border-gray-800 pb-4 mt-2 md:mt-6">
+      <header className="mb-8 border-b border-gray-300 dark:border-gray-800 pb-4 mt-2 md:mt-6">
         <h1 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">Vendor Wallet</h1>
         <p className="text-gray-400 mt-2 font-medium">Your financial overview and order history</p>
       </header>
@@ -105,8 +105,8 @@ export default function VendorWallet() {
       </div>
 
       {/* Order History Table */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-gray-300 dark:border-gray-700">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             📋 Order History
             <span className="text-xs font-medium text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">{wallet.order_history.length} records</span>
@@ -121,7 +121,7 @@ export default function VendorWallet() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                <tr className="border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                   <th className="text-left p-4 font-bold text-gray-500 uppercase tracking-wider text-xs">Order ID</th>
                   <th className="text-left p-4 font-bold text-gray-500 uppercase tracking-wider text-xs">Item</th>
                   <th className="text-left p-4 font-bold text-gray-500 uppercase tracking-wider text-xs">Seat</th>

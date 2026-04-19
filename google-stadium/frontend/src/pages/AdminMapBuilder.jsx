@@ -32,7 +32,7 @@ export default function AdminMapBuilder() {
   useEffect(() => {
     const fetchLayout = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/map/stadium/layout', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/stadium/layout`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.items && res.data.items.length > 0) {
@@ -171,7 +171,7 @@ export default function AdminMapBuilder() {
   const saveLayout = async () => {
     try {
       setSaveStatus('saving');
-      await axios.post('http://127.0.0.1:8000/map/stadium/layout', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/map/stadium/layout`, {
         name: 'default',
         items
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -186,7 +186,7 @@ export default function AdminMapBuilder() {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full pb-24">
-      <header className="mb-6 border-b border-gray-200 dark:border-gray-800 pb-4 mt-2 md:mt-6">
+      <header className="mb-6 border-b border-gray-300 dark:border-gray-800 pb-4 mt-2 md:mt-6">
         <h1 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
           Map Builder
         </h1>
@@ -203,7 +203,7 @@ export default function AdminMapBuilder() {
             <button
               key={tool.type}
               onClick={() => addItem(tool)}
-              className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-95 min-h-[48px]"
+              className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-lg transition-all active:scale-95 min-h-[48px]"
             >
               <span className="text-xl">{tool.emoji}</span>
               <span className="font-medium text-sm text-gray-700 dark:text-gray-200">{tool.label}</span>
@@ -230,7 +230,7 @@ export default function AdminMapBuilder() {
               <button
                 key={tool.type}
                 onClick={() => addItem(tool)}
-                className="shrink-0 flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md transition active:scale-95 snap-start min-h-[48px] min-w-[48px]"
+                className="shrink-0 flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm transition active:scale-95 snap-start min-h-[48px] min-w-[48px]"
               >
                 <span className="text-lg">{tool.emoji}</span>
                 <span className="font-medium text-xs text-gray-700 dark:text-gray-200 whitespace-nowrap">{tool.label}</span>
@@ -269,7 +269,7 @@ export default function AdminMapBuilder() {
                 <div
                   key={item.id}
                   className={`absolute flex flex-col items-center justify-center rounded-2xl cursor-grab active:cursor-grabbing transition-shadow ${
-                    isSelected ? 'ring-2 ring-white shadow-xl z-20' : 'z-10 shadow-md'
+                    isSelected ? 'ring-2 ring-white shadow-xl z-20' : 'z-10 shadow-sm'
                   }`}
                   style={{
                     left: `${item.x}%`,

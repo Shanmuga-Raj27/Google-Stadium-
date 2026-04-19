@@ -76,9 +76,9 @@ export default function ChatWidget() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="w-80 sm:w-96 h-[500px] max-h-[80vh] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in-up">
+        <div className="w-80 sm:w-96 h-[500px] max-h-[80vh] bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in-up">
           {/* Header */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 flex justify-between items-center">
             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-googleGreen animate-pulse"></span>
               Global Chat
@@ -127,7 +127,7 @@ export default function ChatWidget() {
           </div>
 
           {/* Input Area */}
-          <div className="p-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+          <div className="p-3 bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-800">
             <form onSubmit={sendMessage} className="flex relative">
               <input
                 type="text"

@@ -11,7 +11,7 @@ export default function StadiumMapPage() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/map/config', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/config`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOverrides(res.data.overrides || {});
@@ -28,11 +28,11 @@ export default function StadiumMapPage() {
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto w-full pb-24">
-      <header className="mb-6 border-b border-gray-200 dark:border-gray-800 pb-4 mt-2 md:mt-6">
-        <h1 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+      <header className="mb-6 border-b border-gray-300 dark:border-gray-800 pb-5 mt-2 md:mt-6">
+        <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent uppercase tracking-tight">
           Stadium Map
         </h1>
-        <p className="text-gray-400 mt-2 font-medium">
+        <p className="text-gray-600 dark:text-gray-400 mt-2 font-semibold">
           Interactive venue layout — find your way around the stadium.
         </p>
       </header>
@@ -59,11 +59,12 @@ export default function StadiumMapPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-googleBlue border-t-transparent" />
+           <div className="animate-spin rounded-full h-12 w-12 border-4 border-googleBlue border-t-transparent" />
         </div>
       ) : (
         <>
-          <div className="bg-gray-900 border-2 border-gray-700 rounded-3xl p-3 md:p-6 shadow-2xl">
+          <div className="bg-gray-900 border-2 border-gray-700 rounded-3xl p-4 md:p-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-googleBlue via-googleGreen to-googleYellow opacity-50"></div>
             <StadiumSVG overrides={overrides} />
           </div>
 
@@ -72,7 +73,7 @@ export default function StadiumMapPage() {
             {Object.entries(resolved).map(([id, sec]) => (
               <div
                 key={id}
-                className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm flex items-center gap-3"
+                className="p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm flex items-center gap-3"
               >
                 <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: sec.color }} />
                 <div className="min-w-0">

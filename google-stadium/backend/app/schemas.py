@@ -41,8 +41,8 @@ class UserCreate(BaseModel):
     email: str
     password: str
     role: RoleEnum = RoleEnum.fan
-    
     store_name: Optional[str] = None
+    admin_secret: Optional[str] = None
 
 class UserLogin(BaseModel):
     username: str
@@ -53,10 +53,18 @@ class UserResponse(BaseModel):
     username: str
     email: Optional[str] = None
     role: RoleEnum
+    default_block: Optional[str] = None
+    default_row: Optional[str] = None
+    default_seat: Optional[str] = None
     vendor_profile: Optional[VendorProfileResponse] = None
     
     class Config:
         from_attributes = True
+
+class RegisterResponse(BaseModel):
+    user: UserResponse
+    access_token: str
+    token_type: str = "bearer"
 
 class OrderCreate(BaseModel):
     user_id: int
