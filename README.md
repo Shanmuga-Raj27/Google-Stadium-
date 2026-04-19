@@ -54,7 +54,6 @@ Rather than attempting a "one-shot" generation, this project was built using an 
 * **Auth:** Secure JWT Implementation
 
 ### Folder Structure
-```text
 Google Stadium/
 │
 ├── Antigravity Prompt/          # 🧠 Contains all AI prompts (.md) and implementation details
@@ -66,7 +65,7 @@ Google Stadium/
     └── backend/                 # FastAPI Application (Deployed as Web Service) 
 
 
-## ☁️ Cloud Deployment Architecture
+##☁️ Cloud Deployment Architecture
 
 The application is fully deployed and hosted on **Render**, utilizing a modern, decoupled cloud architecture:
 
