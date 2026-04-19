@@ -64,7 +64,11 @@ export default function VendorDashboard() {
   useEffect(() => {
     if (!user) return;
     let isCancelled = false;
-    const socket = new WebSocket(`${API.replace('http', 'ws')}/ws/${user.id}`);
+    
+    // Dynamic protocol: Convert http/https API URL to ws/wss
+    const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    const wsUrl = apiUrl.replace(/^http/, 'ws') + `/ws/${user.id}`;
+    const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {
       if (!isCancelled) console.log("Vendor WS Connected");

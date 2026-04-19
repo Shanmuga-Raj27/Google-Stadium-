@@ -1,6 +1,7 @@
 export class WebSocketClient {
   constructor(path, onMessage) {
-    this.url = `ws://127.0.0.1:8000${path}`;
+    const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    this.url = apiUrl.replace(/^http/, 'ws') + path;
     this.onMessage = onMessage;
     this.ws = null;
     this.reconnectAttempts = 0;

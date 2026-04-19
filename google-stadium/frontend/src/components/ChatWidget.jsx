@@ -14,8 +14,10 @@ export default function ChatWidget() {
     if (!user) return;
     let isCancelled = false;
     
-    // Connect to global chat websocket
-    const ws = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${user.id}`);
+    // Dynamic protocol: Convert http/https API URL to ws/wss
+    const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    const wsUrl = apiUrl.replace(/^http/, 'ws') + `/ws/chat/${user.id}`;
+    const ws = new WebSocket(wsUrl);
     
     ws.onmessage = (event) => {
       if (isCancelled) return;
