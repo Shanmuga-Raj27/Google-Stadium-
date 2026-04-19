@@ -89,15 +89,6 @@ The application is fully deployed and hosted on **Render**, utilizing a modern, 
 
 ---
 
-### Final Touches Before Submitting:
-
-1.  Make sure to replace `YOUR_BLOG_LINK_HERE` and `YOUR_LINKEDIN_LINK_HERE` at the very bottom with your actual links before you submit to the judges.
-2.  Once this is pasted into GitHub, it acts as a perfect portfolio piece, not just for the hackathon, but for your future interviews at places like Zoho! 
-
-You are completely ready to submit. Good luck in the PromptWars!
-
----
-
 **Developer:** Shanmugaraj R  
 **LinkedIn:** [Add your LinkedIn URL here](YOUR_LINKEDIN_URL)  
 **GitHub:** [Add your GitHub URL here](YOUR_GITHUB_URL)
