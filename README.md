@@ -9,7 +9,7 @@
 
 **Google Stadium** is a real-time, full-stack web application designed to revolutionize the live event experience. It solves the massive logistical headaches of stadium crowds by providing seat-delivery food ordering, interactive crowd mapping, and global stadium communication.
 
-🔗 **[Experience the Live App Here](https://google-stadium-app.onrender.com)** *(Note: Please allow 30-50 seconds for the free-tier backend server to spin up on your first request).*
+🔗 **[Experience the Live App Here](https://google-stadium-app.onrender.com)** *(Note: The backend of this application is hosted on a free-tier Render instance. If the app hasn't been used in a while, it may take **30 to 50 seconds** for the server to wake up on your first request. Thank you for your patience!).*
 
 ---
 
@@ -85,7 +85,7 @@ The application is fully deployed and hosted on **Render**, utilizing a modern, 
 ## 📖 The PromptWars Narrative
 
 * 📝 **[Read the Technical Blog Post](YOUR_BLOG_LINK_HERE)** - A deep dive into how I used Antigravity to solve full-stack deployment challenges.
-* 💼 **[View the Build-in-Public Journey](YOUR_LINKEDIN_LINK_HERE)** - My updates and learnings shared with the developer community.
+* 💼 **[Read the LinkedIn Post](YOUR_LINKEDIN_LINK_HERE)** - My updates and learnings shared on the LinkedIn.
 
 ---
 
