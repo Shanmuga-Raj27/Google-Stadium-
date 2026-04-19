@@ -130,7 +130,7 @@ export default function Login() {
               theme="outline"
               size="large"
               shape="pill"
-              width="100%"
+              width="250"
             />
           </div>
         </form>

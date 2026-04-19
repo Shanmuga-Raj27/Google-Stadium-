@@ -100,14 +100,14 @@ gate_status = {
     4: "Low Traffic"
 }
 
-@app.get("/gates/status")
+@app.get("/gates/status", response_model=dict[int, str])
 async def get_gates_status():
     return gate_status
 
 class GateUpdateSchema(BaseModel):
     status: str
 
-@app.put("/gates/{gate_id}")
+@app.put("/gates/{gate_id}", response_model=dict[str, str])
 async def update_gate(gate_id: int, gate_update: GateUpdateSchema):
     if gate_id in gate_status:
         gate_status[gate_id] = gate_update.status

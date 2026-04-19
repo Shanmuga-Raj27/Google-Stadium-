@@ -87,6 +87,38 @@ The application is fully deployed and hosted on **Render**, utilizing a modern, 
 
 ---
 
+## ⚡ Performance & Efficiency
+This application is optimized for high-concurrent stadium traffic:
+- **Connection Pooling:** Backend uses SQLAlchemy async connection pooling to handle hundreds of simultaneous API requests.
+- **Lazy Loading:** Frontend utilizes React `Suspense` and `lazy()` route splitting to minimize initial bundle size and speed up page loads.
+- **Asynchronous Execution:** Every database call and WebSocket broadcast is fully asynchronous, preventing blocking operations.
+
+---
+
+## 🧪 Testing Coverage
+Google Stadium includes a robust automated testing baseline to ensure reliability:
+
+### Backend Tests (pytest)
+Validate core business logic and API integrity:
+```bash
+cd google-stadium/backend
+pytest
+```
+- **Main Tests:** `backend/tests/test_main.py` (Health checks, invalid auth handling)
+- **API Tests:** `backend/tests/test_api.py` (Profile retrieval, 404 edge cases, map accessibility)
+
+### Frontend Tests (vitest)
+Verify component rendering and API integration:
+```bash
+cd google-stadium/frontend
+npm test
+```
+- **App Test:** `frontend/src/App.test.jsx` (Sanity check for root rendering)
+- **Dashboard Test:** `frontend/src/Dashboard.test.jsx` (Mocking API responses to verify vendor list rendering)
+
+
+---
+
 ## 📖 The PromptWars Narrative
 
 * 📝 **[Read the Technical Blog Post](https://dev.to/rshanmugaraj_e471fa3f2ed/from-prompt-to-production-how-i-built-google-stadium-for-google-promptwars-2026-i66)** - A deep dive into how I used Antigravity to solve full-stack deployment challenges.

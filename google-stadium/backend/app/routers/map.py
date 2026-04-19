@@ -8,7 +8,7 @@ from .auth import get_current_user
 
 router = APIRouter(prefix="/map", tags=["Map"])
 
-@router.post("/ping")
+@router.post("/ping", response_model=dict[str, str | int])
 async def ping_location(ping: LocationPingCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_ping = LocationPing(zone=ping.zone)
     db.add(db_ping)
@@ -32,7 +32,7 @@ async def ping_location(ping: LocationPingCreate, db: AsyncSession = Depends(get
 
 # --- Sprint 19: Map Config CRUD ---
 
-@router.get("/config")
+@router.get("/config", response_model=dict[str, dict])
 async def get_map_config(db: AsyncSession = Depends(get_db)):
     """
     Fetch the admin's stadium map config overrides.
@@ -49,7 +49,7 @@ async def get_map_config(db: AsyncSession = Depends(get_db)):
     return {"overrides": layout.layout_data or {}}
 
 
-@router.post("/config")
+@router.post("/config", response_model=dict[str, str | int])
 async def save_map_config(
     payload: MapConfigSave,
     db: AsyncSession = Depends(get_db),
