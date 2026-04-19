@@ -24,7 +24,8 @@ export default function AdminMapEditor() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/config`, {
+        const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+        const res = await axios.get(`${apiUrl}/map/config`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOverrides(res.data.overrides || {});
@@ -56,7 +57,8 @@ export default function AdminMapEditor() {
   const saveConfig = async () => {
     try {
       setSaveStatus('saving');
-      await axios.post(`${import.meta.env.VITE_API_URL}/map/config`, { overrides }, {
+      const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+      await axios.post(`${apiUrl}/map/config`, { overrides }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSaveStatus('saved');

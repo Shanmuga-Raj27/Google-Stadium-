@@ -1,7 +1,8 @@
 export class WebSocketClient {
   constructor(path, onMessage) {
-    const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-    this.url = apiUrl.replace(/^http/, 'ws') + path;
+    const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+    const wsBase = apiUrl.replace(/^http/, 'ws');
+    this.url = `${wsBase}${path}`;
     this.onMessage = onMessage;
     this.ws = null;
     this.reconnectAttempts = 0;

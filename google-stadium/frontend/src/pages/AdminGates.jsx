@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
 
 export default function AdminGates() {
   const token = useAuthStore((state) => state.token);

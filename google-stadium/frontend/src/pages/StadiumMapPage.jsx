@@ -11,7 +11,8 @@ export default function StadiumMapPage() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/config`, {
+        const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+        const res = await axios.get(`${apiUrl}/map/config`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOverrides(res.data.overrides || {});

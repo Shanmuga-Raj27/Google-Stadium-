@@ -9,7 +9,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/vendors/admin/users`, {
+        const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+        const res = await axios.get(`${apiUrl}/vendors/admin/users`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(res.data);

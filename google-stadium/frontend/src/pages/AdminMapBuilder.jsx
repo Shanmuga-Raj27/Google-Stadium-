@@ -32,7 +32,8 @@ export default function AdminMapBuilder() {
   useEffect(() => {
     const fetchLayout = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/map/stadium/layout`, {
+        const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+        const res = await axios.get(`${apiUrl}/map/stadium/layout`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.items && res.data.items.length > 0) {
@@ -171,7 +172,8 @@ export default function AdminMapBuilder() {
   const saveLayout = async () => {
     try {
       setSaveStatus('saving');
-      await axios.post(`${import.meta.env.VITE_API_URL}/map/stadium/layout`, {
+      const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+      await axios.post(`${apiUrl}/map/stadium/layout`, {
         name: 'default',
         items
       }, { headers: { Authorization: `Bearer ${token}` } });

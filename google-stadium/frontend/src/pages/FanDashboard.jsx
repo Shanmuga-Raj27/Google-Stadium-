@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { MAP_COORDS } from '../components/StadiumSVG';
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
 
 const ORDER_STEPS = ['pending', 'preparing', 'ready', 'delivered'];
 
@@ -161,8 +161,9 @@ export default function FanDashboard() {
     let isCancelled = false;
     
     // Dynamic protocol: Convert http/https API URL to ws/wss
-    const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-    const wsUrl = apiUrl.replace(/^http/, 'ws') + `/ws/${user.id}`;
+    const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+    const wsBase = apiUrl.replace(/^http/, 'ws');
+    const wsUrl = `${wsBase}/ws/${user.id}`;
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {

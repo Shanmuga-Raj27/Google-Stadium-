@@ -10,7 +10,8 @@ export default function VendorWallet() {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/vendors/${user.id}/wallet`, {
+        const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+        const res = await axios.get(`${apiUrl}/vendors/${user.id}/wallet`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWallet(res.data);

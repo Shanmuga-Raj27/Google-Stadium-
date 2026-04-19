@@ -22,8 +22,9 @@ export default function Login() {
       params.append('username', username);
       params.append('password', password);
 
-      console.log(`[AUTH] Step 3: Sending request to ${import.meta.env.VITE_API_URL}/auth/login`);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
+      console.log(`[AUTH] Step 3: Sending request to ${apiUrl}/auth/login`);
+      const response = await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params
