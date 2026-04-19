@@ -65,7 +65,7 @@ Google Stadium/
     └── backend/                 # FastAPI Application (Deployed as Web Service) 
 
 
-##☁️ Cloud Deployment Architecture
+## ☁️ Cloud Deployment Architecture
 
 The application is fully deployed and hosted on **Render**, utilizing a modern, decoupled cloud architecture:
 
