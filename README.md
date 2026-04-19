@@ -84,8 +84,8 @@ The application is fully deployed and hosted on **Render**, utilizing a modern, 
 
 ## 📖 The PromptWars Narrative
 
-* 📝 **[Read the Technical Blog Post](YOUR_BLOG_LINK_HERE)** - A deep dive into how I used Antigravity to solve full-stack deployment challenges.
-* 💼 **[Read the LinkedIn Post](YOUR_LINKEDIN_LINK_HERE)** - My updates and learnings shared on the LinkedIn.
+* 📝 **[Read the Technical Blog Post](https://dev.to/rshanmugaraj_e471fa3f2ed/from-prompt-to-production-how-i-built-google-stadium-for-google-promptwars-2026-i66)** - A deep dive into how I used Antigravity to solve full-stack deployment challenges.
+* 💼 **[Read the LinkedIn Post](https://www.linkedin.com/posts/shanmugaraj27_googlepromptwars-python-fastapi-ugcPost-7451570304818106369-0D-E?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFP0UbUB50NOIOxnb-R37ovQLTiUSEECljY)** - My updates and learnings shared on the LinkedIn.
 
 ---
 
