@@ -193,6 +193,7 @@ export default function VendorDashboard() {
                       ? 'bg-googleBlue/10 border-googleBlue text-googleBlue' 
                       : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gray-400'
                   }`}
+                  aria-label={`Select quick message: ${msg}`}
                 >
                   {msg}
                 </button>
@@ -205,18 +206,21 @@ export default function VendorDashboard() {
               placeholder="Or type a custom message..."
               rows={3}
               className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-googleBlue resize-none"
+              aria-label="Custom vendor message to fan"
             />
             
             <div className="flex gap-3 mt-4">
               <button 
                 onClick={() => setMessageModal({ open: false, orderIdx: null, orderId: null, nextStatus: null })}
                 className="flex-1 p-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition"
+                aria-label="Cancel message and status update"
               >
                 Cancel
               </button>
               <button 
                 onClick={submitWithMessage}
                 className="flex-1 p-3 rounded-xl font-bold bg-googleBlue hover:bg-blue-600 text-white shadow-lg transition active:scale-95"
+                aria-label="Confirm item is ready and send message"
               >
                 Mark as Ready
               </button>
@@ -234,19 +238,19 @@ export default function VendorDashboard() {
             <h3 className="font-bold text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-700 pb-3 uppercase text-xs tracking-widest">Add New Item</h3>
             <div className="flex flex-wrap gap-4">
               <div className="w-20">
-                <label className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Icon</label>
-                <input required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-center text-2xl shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.icon} onChange={e=>setMenuForm({...menuForm, icon: e.target.value})} />
+                <label htmlFor="icon" className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Icon</label>
+                <input id="icon" required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-center text-2xl shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.icon} onChange={e=>setMenuForm({...menuForm, icon: e.target.value})} aria-label="Menu Item Emoji Icon" />
               </div>
               <div className="flex-1 min-w-[150px]">
-                <label className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Item Name</label>
-                <input required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white font-bold placeholder:text-gray-400 shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.name} onChange={e=>setMenuForm({...menuForm, name: e.target.value})} placeholder="Spicy Nachos" />
+                <label htmlFor="itemName" className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Item Name</label>
+                <input id="itemName" required type="text" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white font-bold placeholder:text-gray-400 shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.name} onChange={e=>setMenuForm({...menuForm, name: e.target.value})} placeholder="Spicy Nachos" aria-label="Menu Item Name" />
               </div>
               <div className="w-32">
-                <label className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Price (₹)</label>
-                <input required type="number" step="0.01" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white font-bold shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.price} onChange={e=>setMenuForm({...menuForm, price: e.target.value})} placeholder="199" />
+                <label htmlFor="price" className="text-[10px] text-gray-500 mb-1 block font-black uppercase tracking-widest">Price (₹)</label>
+                <input id="price" required type="number" step="0.01" className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-gray-900 dark:text-white font-bold shadow-inner focus:ring-2 focus:ring-googleBlue outline-none" value={menuForm.price} onChange={e=>setMenuForm({...menuForm, price: e.target.value})} placeholder="199" aria-label="Menu Item Price in Rupees" />
               </div>
             </div>
-            <button type="submit" className="p-4 bg-googleBlue hover:bg-blue-600 rounded-xl font-black text-white mt-2 transition-all shadow-lg active:scale-95 text-sm uppercase tracking-widest">+ Publish to Menu</button>
+            <button type="submit" className="p-4 bg-googleBlue hover:bg-blue-600 rounded-xl font-black text-white mt-2 transition-all shadow-lg active:scale-95 text-sm uppercase tracking-widest" aria-label="Add new item to your menu">+ Publish to Menu</button>
           </form>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-max">
@@ -313,6 +317,7 @@ export default function VendorDashboard() {
                           <button 
                             onClick={() => handleStatusAction(o.order_id, action.next, i)} 
                             className={`p-3 md:px-5 md:py-3 rounded-xl font-bold shadow-md transition active:scale-95 text-sm ${action.color}`}
+                            aria-label={`Update order #${o.order_id} to ${action.next}`}
                           >
                             {action.label}
                           </button>

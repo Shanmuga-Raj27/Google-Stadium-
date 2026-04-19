@@ -265,8 +265,8 @@ export default function FanDashboard() {
   const vendorCoords = trackingOrder ? MAP_COORDS[vendorStallKey] : null;
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto w-full pb-24">
-      <header className="mb-8 border-b border-gray-300 dark:border-gray-800 pb-4 mt-2 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto w-full pb-24">
+      <header className="mb-6 md:mb-8 border-b border-gray-300 dark:border-gray-800 pb-4 mt-2 md:mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent">Google Stadium</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2 font-semibold">Hello, {user?.username}! Order directly to your seat.</p>
@@ -278,19 +278,19 @@ export default function FanDashboard() {
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">📍 Your Seat Location</h2>
         <div className="flex flex-wrap gap-3">
           <div className="flex-1 min-w-[80px]">
-            <label className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Block</label>
-            <input type="text" placeholder="A" value={location.block} onChange={e => setLocation({...location, block: e.target.value})}
-              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black uppercase outline-none focus:ring-2 focus:ring-googleBlue" />
+            <label htmlFor="block" className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Block</label>
+            <input id="block" type="text" placeholder="A" value={location.block} onChange={e => setLocation({...location, block: e.target.value})}
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black uppercase outline-none focus:ring-2 focus:ring-googleBlue" aria-label="Stadium Block" />
           </div>
           <div className="flex-1 min-w-[80px]">
-            <label className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Row</label>
-            <input type="text" placeholder="3" value={location.row} onChange={e => setLocation({...location, row: e.target.value})}
-              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black outline-none focus:ring-2 focus:ring-googleBlue" />
+            <label htmlFor="row" className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Row</label>
+            <input id="row" type="text" placeholder="3" value={location.row} onChange={e => setLocation({...location, row: e.target.value})}
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black outline-none focus:ring-2 focus:ring-googleBlue" aria-label="Seat Row" />
           </div>
           <div className="flex-1 min-w-[80px]">
-            <label className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Seat</label>
-            <input type="text" placeholder="12" value={location.seat} onChange={e => setLocation({...location, seat: e.target.value})}
-              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black outline-none focus:ring-2 focus:ring-googleBlue" />
+            <label htmlFor="seat" className="text-xs text-gray-700 dark:text-gray-400 mb-1 block font-bold uppercase tracking-wider">Seat</label>
+            <input id="seat" type="text" placeholder="12" value={location.seat} onChange={e => setLocation({...location, seat: e.target.value})}
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl p-3 text-base text-gray-900 dark:text-white text-center font-black outline-none focus:ring-2 focus:ring-googleBlue" aria-label="Seat Number" />
           </div>
         </div>
         
@@ -305,6 +305,7 @@ export default function FanDashboard() {
                   ? 'bg-googleGreen/10 border-googleGreen text-googleGreen shadow-lg shadow-googleGreen/10' 
                   : 'bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-500 hover:border-gray-400'
               }`}
+              aria-label="Select Pickup delivery method"
             >
               🚶 Pickup <span className="block text-xs font-medium mt-0.5 opacity-70">Free</span>
             </button>
@@ -315,6 +316,7 @@ export default function FanDashboard() {
                   ? 'bg-googleBlue/10 border-googleBlue text-googleBlue shadow-lg shadow-googleBlue/10' 
                   : 'bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-500 hover:border-gray-400'
               }`}
+              aria-label="Select Seat Delivery method"
             >
               🛵 Seat Delivery <span className="block text-xs font-medium mt-0.5 opacity-70">+₹60</span>
             </button>
@@ -329,7 +331,7 @@ export default function FanDashboard() {
                 <div className="w-3 h-3 bg-emerald-400 rounded-full animate-ping" />
                 <span className="text-emerald-100 font-semibold">{orderStatus}</span>
             </div>
-            <button onClick={() => setOrderStatus(null)} className="text-emerald-400 hover:text-emerald-300 font-bold p-2 min-w-[48px] min-h-[48px]">Dismiss</button>
+            <button onClick={() => setOrderStatus(null)} className="text-emerald-400 hover:text-emerald-300 font-bold p-2 min-w-[48px] min-h-[48px]" aria-label="Dismiss order status notification">Dismiss</button>
         </div>
       )}
 
@@ -410,9 +412,9 @@ export default function FanDashboard() {
       {!activeVendor ? (
         <div>
           <h2 className="text-2xl font-extrabold mb-6 text-gray-900 dark:text-white uppercase tracking-tight">🍔 Available Vendors</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {vendors.map(v => (
-              <div key={v.id} onClick={() => setActiveVendor(v)} className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-300 dark:border-gray-700 shadow-sm cursor-pointer hover:shadow-xl transition-all hover:-translate-y-2 group">
+              <div key={v.id} onClick={() => setActiveVendor(v)} className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-3xl border border-gray-300 dark:border-gray-700 shadow-sm cursor-pointer hover:shadow-xl transition-all hover:-translate-y-2 group">
                 <div className="h-40 bg-gray-50 dark:bg-gray-900 rounded-2xl mb-5 flex items-center justify-center text-6xl drop-shadow-md">
                     🏪
                 </div>
@@ -427,7 +429,7 @@ export default function FanDashboard() {
         </div>
       ) : (
         <>
-           <button onClick={() => setActiveVendor(null)} className="mb-6 flex items-center p-3 gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white font-bold transition-colors min-h-[48px] group">
+           <button onClick={() => setActiveVendor(null)} className="mb-6 flex items-center p-3 gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white font-bold transition-colors min-h-[48px] group" aria-label="Back to vendor selection">
                <span className="transition-transform group-hover:-translate-x-1">←</span> Back to Vendors
            </button>
            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-8 border-b border-gray-300 dark:border-gray-800 pb-5 uppercase tracking-tight">{activeVendor.vendor_profile?.store_name || activeVendor.username}</h2>
@@ -436,20 +438,20 @@ export default function FanDashboard() {
                {(activeVendor.vendor_profile?.menu_items || []).map(item => {
                  const preview = getPreviewPricing(item.price);
                  return (
-                   <div key={item.id} className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-300 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                       <div className="flex items-center gap-6">
-                           <div className="w-20 h-20 md:w-28 md:h-28 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl flex items-center justify-center text-5xl md:text-7xl shrink-0 shadow-inner">{item.icon}</div>
-                           <div className="flex-1 min-w-0">
-                               <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-2 truncate">{item.name}</h3>
-                               <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 hidden md:block font-medium">{item.description || "Fresh and delicious. Order straight to your seat!"}</p>
-                               <p className="text-2xl font-black text-googleGreen">₹{Number(item.price).toFixed(2)}</p>
-                           </div>
-                           <div className="shrink-0">
-                               <button onClick={() => placeOrder(item)} className="px-8 py-4 bg-googleBlue hover:bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-googleBlue/20 transition active:scale-95 min-h-[56px] text-lg">
-                                   Order
-                               </button>
-                           </div>
-                       </div>
+                   <div key={item.id} className="bg-white dark:bg-gray-800 p-5 md:p-6 rounded-3xl border border-gray-300 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+                          <div className="w-16 h-16 md:w-28 md:h-28 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl flex items-center justify-center text-4xl md:text-7xl shrink-0 shadow-inner">{item.icon}</div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1 md:mb-2 break-words leading-tight">{item.name}</h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm mb-2 md:mb-3 hidden md:block font-medium">{item.description || "Fresh and delicious. Order straight to your seat!"}</p>
+                            <p className="text-xl md:text-2xl font-black text-googleGreen">₹{Number(item.price).toFixed(2)}</p>
+                          </div>
+                          <div className="shrink-0 w-full md:w-auto">
+                            <button onClick={() => placeOrder(item)} className="w-full md:w-auto px-8 py-4 bg-googleBlue hover:bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-googleBlue/20 transition active:scale-95 min-h-[56px] text-lg" aria-label={`Order ${item.name} for ₹${Number(item.price).toFixed(2)}`}>
+                              Order
+                            </button>
+                          </div>
+                        </div>
                        {/* Pricing Preview */}
                        <div className="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700 flex flex-wrap items-center gap-4 text-xs font-bold text-gray-600 dark:text-gray-400">
                          <span className="uppercase tracking-widest">Subtotal: ₹{preview.subtotal.toFixed(2)}</span>

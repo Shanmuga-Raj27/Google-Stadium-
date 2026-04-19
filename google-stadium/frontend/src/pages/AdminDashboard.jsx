@@ -40,7 +40,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* KPI Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
         <div className="p-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-3xl shadow-sm">
           <p className="text-xs text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest mb-1">Total Users</p>
           <p className="text-3xl font-black text-gray-900 dark:text-white mt-1">{users.length}</p>
