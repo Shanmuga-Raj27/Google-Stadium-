@@ -95,5 +95,5 @@ The application is fully deployed and hosted on **Render**, utilizing a modern, 
 ---
 
 **Developer:** Shanmugaraj R  
-**LinkedIn:** [Add your LinkedIn URL here](https://www.linkedin.com/in/shanmugaraj27)  
-**GitHub:** [Add your GitHub URL here](https://github.com/Shanmuga-Raj27)
+**LinkedIn:** [LinkedIn](https://www.linkedin.com/in/shanmugaraj27)  
+**GitHub:** [GitHub](https://github.com/Shanmuga-Raj27)
