@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
+import ChatWidget from '../components/ChatWidget';
 
 const API = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
 
@@ -330,7 +331,7 @@ export default function VendorDashboard() {
         </div>
 
       </div>
-
+      <ChatWidget />
     </div>
   );
 }

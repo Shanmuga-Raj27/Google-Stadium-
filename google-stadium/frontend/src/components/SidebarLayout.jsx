@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useTheme } from '../store/ThemeContext';
-import ChatWidget from './ChatWidget';
 import { LayoutDashboard, LogOut, Moon, Sun, User as UserIcon, Menu, Shield, Map, Wallet, PenTool } from 'lucide-react';
 
 export default function SidebarLayout() {
@@ -154,9 +153,6 @@ export default function SidebarLayout() {
       {/* Right Content Area */}
       <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-black/50 relative pt-16 md:pt-0">
         <Outlet />
-        
-        {/* Global Chat Floating Widget */}
-        <ChatWidget />
       </main>
     </div>
   );

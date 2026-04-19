@@ -16,7 +16,7 @@ export default function ChatWidget() {
     
     // Dynamic protocol: Convert http/https API URL to ws/wss
     const apiUrl = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
-    const wsBase = apiUrl.replace(/^http/, 'ws');
+    const wsBase = apiUrl.endsWith('/') ? apiUrl.slice(0, -1).replace(/^http/, 'ws') : apiUrl.replace(/^http/, 'ws');
     const wsUrl = `${wsBase}/ws/chat/${user.id}`;
     const ws = new WebSocket(wsUrl);
     
