@@ -11,6 +11,11 @@
 
 🔗 **[Experience the Live App Here](https://google-stadium-app.onrender.com)** *(Note: The backend of this application is hosted on a free-tier Render instance. If the app hasn't been used in a while, it may take **30 to 50 seconds** for the server to wake up on your first request. Thank you for your patience!).*
 
+## Admin Secret Auth Code: 
+```
+google-stadium-admin-2024
+```
+
 ---
 
 ## 🤖 Built with Google Antigravity
