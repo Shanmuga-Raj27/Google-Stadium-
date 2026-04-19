@@ -54,7 +54,7 @@ Rather than attempting a "one-shot" generation, this project was built using an 
 * **Auth:** Secure JWT Implementation
 
 ### Folder Structure
-
+```
 Google Stadium/
 │
 ├── Antigravity Prompt/          # 🧠 Contains all AI prompts (.md) and implementation details
@@ -69,8 +69,8 @@ Google Stadium/
     └── backend/                 # FastAPI Application
         ├── app/                 # Routers, Models, Schemas, and Database logic
         ├── requirements.txt     # Python dependencies
-        └── .env                 # Environment variables (Ignored in version control) 
-
+        └── .env                 # Environment variables (Ignored in version control)
+```
 
 ## ☁️ Cloud Deployment Architecture
 
