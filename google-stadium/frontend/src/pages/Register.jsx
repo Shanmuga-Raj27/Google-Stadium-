@@ -73,16 +73,19 @@ export default function Register() {
   };
 
   const onGoogleSuccess = async (credentialResponse) => {
+    setIsLoading(true);
+    toast.loading("Verifying Google account... waking up servers 🏟️", { id: "google-cold-start" });
     try {
-      setIsLoading(true);
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/google`, {
         token: credentialResponse.credential
       });
+      toast.success("Google Sign-In Successful!", { id: "google-cold-start" });
       login(res.data.access_token);
       navigate('/fan-dashboard');
     } catch (err) {
       console.error("Google signup failed", err);
-      // Fallback or error message
+      toast.error("Google Sign-In failed.", { id: "google-cold-start" });
+      setError("Sign up with Google failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -166,15 +169,25 @@ export default function Register() {
           </div>
 
           <div className="flex justify-center mt-2">
-            <GoogleLogin
-              onSuccess={onGoogleSuccess}
-              onError={() => console.log("Google Sign-In failed")}
-              useOneTap
-              theme="outline"
-              size="large"
-              shape="pill"
-              width="250"
-            />
+            {isLoading ? (
+              <div className="flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 rounded-full border-2 border-dashed border-googleBlue/30 text-googleBlue font-bold text-sm animate-pulse">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-googleBlue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Authenticating with Google...
+              </div>
+            ) : (
+              <GoogleLogin
+                onSuccess={onGoogleSuccess}
+                onError={() => console.log("Google Sign-In failed")}
+                useOneTap
+                theme="outline"
+                size="large"
+                shape="pill"
+                width="250"
+              />
+            )}
           </div>
         </form>
 
