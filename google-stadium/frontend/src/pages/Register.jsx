@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from '../store/authStore';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || "https://google-stadium-backend.onrender.com";
 
@@ -22,6 +23,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+    toast.loading("The app is loading, please wait 30 to 50 seconds... 🏟️", { id: "cold-start-toast" });
 
     try {
       const payload = {
@@ -45,6 +47,7 @@ export default function Register() {
       }
 
       const data = await response.json();
+      toast.success("Welcome!", { id: "cold-start-toast" });
 
       // Auto-login: save the access_token from registration response
       if (data.access_token) {
@@ -61,7 +64,9 @@ export default function Register() {
       }
     } catch (err) {
       console.error("[AUTH] ERROR CAUGHT:", err);
-      setError(err.message || "Unable to connect to the server.");
+      const msg = err.message || "Unable to connect to the server.";
+      setError(msg);
+      toast.error(msg, { id: "cold-start-toast" });
     } finally {
       setIsLoading(false);
     }
@@ -142,14 +147,14 @@ export default function Register() {
             )}
           </div>
 
-          <button type="submit" disabled={isLoading} className={`w-full py-4 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-googleGreen hover:bg-green-600'} text-white font-black rounded-xl shadow-lg shadow-googleGreen/20 transition-all active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap uppercase tracking-widest text-sm`} aria-label="Create your account">
+          <button type="submit" disabled={isLoading} className={`w-full py-4 ${isLoading ? 'bg-gray-400 opacity-70 cursor-not-allowed' : 'bg-googleGreen hover:bg-green-600'} text-white font-black rounded-xl shadow-lg shadow-googleGreen/20 transition-all active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap uppercase tracking-widest text-sm disabled:opacity-70 disabled:cursor-not-allowed`} aria-label="Create your account">
             {isLoading ? (
               <>
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Creating...
+                Connecting...
               </>
             ) : 'Sign Up Now'}
           </button>

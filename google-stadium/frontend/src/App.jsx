@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import SidebarLayout from './components/SidebarLayout';
 import { ThemeProvider } from './store/ThemeContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -23,6 +24,7 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <ThemeProvider>
+      <Toaster position="top-center" reverseOrder={false} />
       <Router>
         <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center font-black text-googleBlue text-xl animate-pulse">Loading Stadium...</div>}>
           <Routes>

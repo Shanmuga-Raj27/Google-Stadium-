@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from '../store/authStore';
+import { toast } from 'react-hot-toast';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -17,7 +18,8 @@ export default function Login() {
     console.log("[AUTH] Step 1: Form submitted. Preventing default.");
     setError("");
     setIsLoading(true);
-    
+    toast.loading("The app is loading, please wait 30 to 50 seconds... 🏟️", { id: "cold-start-toast" });
+
     try {
       console.log("[AUTH] Step 2: Preparing payload.");
       const params = new URLSearchParams();
@@ -31,31 +33,34 @@ export default function Login() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       console.log("[AUTH] Step 4: Response received!", response.status);
-      
+
+      toast.success("Welcome back!", { id: "cold-start-toast" });
       login(data.access_token);
       localStorage.setItem("token", data.access_token);
-      
+
       console.log("[AUTH] Step 5: Decoding token and navigating...");
       const base64Url = data.access_token.split('.')[1];
-      const jsonPayload = decodeURIComponent(atob(base64Url.replace(/-/g, '+').replace(/_/g, '/')).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      const jsonPayload = decodeURIComponent(atob(base64Url.replace(/-/g, '+').replace(/_/g, '/')).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
       const payload = JSON.parse(jsonPayload);
-      
+
       if (payload.role === 'vendor') navigate('/vendor-dashboard');
       else if (payload.role === 'admin') navigate('/admin-dashboard');
       else navigate('/fan-dashboard');
     } catch (err) {
       console.error("[AUTH] ERROR CAUGHT:", err);
-      setError(err.message || "Unable to connect to the server. Check backend.");
+      const msg = err.message || "Unable to connect to the server. Check backend.";
+      setError(msg);
+      toast.error(msg, { id: "cold-start-toast" });
     } finally {
       console.log("[AUTH] Step 6: Finally block running. Resetting loading state.");
       setIsLoading(false);
@@ -82,16 +87,16 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4 transition-colors">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 p-6 md:p-10 rounded-3xl shadow-xl border border-gray-300 dark:border-gray-700">
         <div className="mb-8 text-center">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent mb-2">Google Stadium</h1>
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em]">Sign In</h2>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-googleBlue to-googleGreen bg-clip-text text-transparent mb-2">Google Stadium</h1>
+          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-[0.2em]">Sign In</h2>
         </div>
-        
+
         {error && (
           <div className="p-4 mb-6 text-sm font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10 border border-red-300 dark:border-red-500/50 rounded-xl animate-shake">
             ⚠️ {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="username" className="block text-xs font-black text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">Username</label>
@@ -103,15 +108,15 @@ export default function Login() {
             <input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-googleBlue transition-all shadow-inner placeholder:text-gray-400" placeholder="••••••••" aria-label="Password" />
           </div>
-          
-          <button type="submit" disabled={isLoading} className={`w-full py-4 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-googleBlue hover:bg-blue-600'} text-white font-black rounded-xl shadow-lg shadow-googleBlue/20 transition-all active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap uppercase tracking-widest text-sm`} aria-label="Sign In to your account">
+
+          <button type="submit" disabled={isLoading} className={`w-full py-4 ${isLoading ? 'bg-gray-400 opacity-70 cursor-not-allowed' : 'bg-googleBlue hover:bg-blue-600'} text-white font-black rounded-xl shadow-lg shadow-googleBlue/20 transition-all active:scale-95 mt-4 flex items-center justify-center whitespace-nowrap uppercase tracking-widest text-sm disabled:opacity-70 disabled:cursor-not-allowed`} aria-label="Sign In to your account">
             {isLoading ? (
               <>
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Processing...
+                Connecting...
               </>
             ) : 'Sign In'}
           </button>
@@ -123,7 +128,7 @@ export default function Login() {
           </div>
 
           <div className="flex justify-center mt-2">
-            <GoogleLogin 
+            <GoogleLogin
               onSuccess={onGoogleSuccess}
               onError={() => setErrorMessage("Google Sign-In was unsuccessful.")}
               useOneTap
@@ -134,11 +139,11 @@ export default function Login() {
             />
           </div>
         </form>
-        
+
         <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              New to the platform? <Link to="/register" className="text-googleBlue hover:underline font-bold" aria-label="Create a new account">Create an account</Link>
-            </p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+            New to the platform? <Link to="/register" className="text-googleBlue hover:underline font-bold" aria-label="Create a new account">Create an account</Link>
+          </p>
         </div>
       </div>
     </div>
